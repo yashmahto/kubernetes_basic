@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubernetes_basic-api
+  labels:
+    app: kubernetes_basic-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubernetes_basic-api
+  template:
+    metadata:
+      labels:
+        app: kubernetes_basic-api
+    spec:
+      containers:
+        - name: kubernetes_basic-api
+          image: yashmahto/kubernetes_basic-api:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /fcuk
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 20
